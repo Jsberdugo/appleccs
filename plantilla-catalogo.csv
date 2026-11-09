@@ -1,0 +1,4 @@
+codigo,nombre,categoria,precio,disponible,foto,descripcion,destacado,Capacidad,Color,Condición
+iphone-15-pro,iPhone 15 Pro,iPhone,899,si,,Descripción del equipo,si,128 GB,"Negro, Natural",Nuevo
+iphone-15-pro,,,999,si,,,,256 GB,Negro,Nuevo
+iphone-15-pro,,,850,no,,,,256 GB,Blanco,Usado
