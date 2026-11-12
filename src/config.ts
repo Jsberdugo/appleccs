@@ -16,3 +16,5 @@ export const TESTIMONIALS: { name: string; text: string }[] = []
 
 export const SHEET_CSV_URL = (import.meta.env.VITE_SHEET_CSV_URL ?? '').trim()
 export const CLOUDINARY_CLOUD = (import.meta.env.VITE_CLOUDINARY_CLOUD ?? '').trim()
+// Worker de Cloudflare que cachea las fotos (ej. https://fotos.dominio.com). Vacío = directo a Cloudinary.
+export const IMAGE_PROXY = (import.meta.env.VITE_IMAGE_PROXY ?? '').trim().replace(new RegExp('/+$'), '')

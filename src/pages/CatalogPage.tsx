@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router'
-import { ProductGrid } from '../components/ProductCard'
+import { ProductGrid, ProductGridSkeleton } from '../components/ProductCard'
 import { CATEGORIES } from '../config'
 import { useCatalog } from '../lib/catalog'
 
@@ -18,7 +18,7 @@ export function CatalogPage() {
       type="button"
       aria-pressed={active === value}
       onClick={() => setParams(value ? { categoria: value } : {})}
-      className={`shrink-0 rounded-full border px-4 py-2 text-sm font-bold ${active === value ? 'border-black bg-black text-white' : 'border-black/20 hover:border-black'}`}
+      className={`shrink-0 rounded-full border px-4 py-2 text-sm font-bold ${active === value ? 'border-black bg-black text-white' : 'border-black/20 hover:border-black'} transition-colors duration-200 active:scale-95`}
     >
       {label}
     </button>
@@ -27,7 +27,7 @@ export function CatalogPage() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
       <title>Catálogo | Apple Caracas</title>
-      <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl">Catálogo</h1>
+      <h1 className="animate-fade-up text-4xl font-extrabold tracking-tight sm:text-6xl">Catálogo</h1>
       {isDemo && <p className="mt-3 text-sm text-neutral-500">Productos de prueba. El catálogo real se carga desde Google Sheets.</p>}
       <input
         type="search"
@@ -42,9 +42,9 @@ export function CatalogPage() {
         {[...CATEGORIES, ...extra].map((c) => chip(c, c))}
       </div>
       <div className="mt-8">
-        {status === 'loading' && <p className="text-neutral-500">Cargando productos...</p>}
+        {status === 'loading' && <ProductGridSkeleton />}
         {status === 'error' && <p className="text-neutral-500">No pudimos cargar el catálogo. Intenta de nuevo en unos minutos.</p>}
-        {status === 'ready' && (visible.length ? <ProductGrid products={visible} /> : <p className="py-16 text-center text-neutral-500">No hay productos con ese filtro.</p>)}
+        {status === 'ready' && (visible.length ? <ProductGrid key={active + term} products={visible} /> : <p className="py-16 text-center text-neutral-500">No hay productos con ese filtro.</p>)}
       </div>
     </section>
   )

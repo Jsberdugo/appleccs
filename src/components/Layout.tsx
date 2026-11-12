@@ -2,18 +2,36 @@ import { useEffect } from 'react'
 import { Link, Outlet, useLocation } from 'react-router'
 import { CATEGORIES, STORE } from '../config'
 import { setCartOpen, useCartItems, whatsappUrl } from '../lib/cart'
+import { useCatalog } from '../lib/catalog'
 import { CartDrawer } from './CartDrawer'
+
+// Quita el loader de index.html cuando el catálogo responde (máximo 4 s).
+function useHideSplash(ready: boolean) {
+  useEffect(() => {
+    const splash = document.getElementById('splash')
+    if (!splash) return
+    const hide = () => {
+      splash.classList.add('is-hidden')
+      setTimeout(() => splash.remove(), 600)
+    }
+    if (ready) return hide()
+    const timer = setTimeout(hide, 4000)
+    return () => clearTimeout(timer)
+  }, [ready])
+}
 
 function Logo() {
   return (
-    <Link to="/" className="text-lg font-extrabold tracking-tight">
-      Apple<span className="font-light">Caracas</span>
+    <Link to="/" aria-label={`${STORE.name}, inicio`} className="block transition-transform hover:scale-105">
+      <img src="/logo.png" alt={STORE.name} width={352} height={488} className="h-14 w-auto sm:h-16" />
     </Link>
   )
 }
 
 export function Layout() {
   const { pathname, hash } = useLocation()
+  const { status } = useCatalog()
+  useHideSplash(status !== 'loading')
   const count = useCartItems().reduce((n, x) => n + x.qty, 0)
 
   useEffect(() => {
@@ -24,7 +42,7 @@ export function Layout() {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-30 border-b border-black/10 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 h-20">
           <Logo />
           <nav className="flex items-center gap-4 text-sm font-semibold sm:gap-7">
             <Link to="/catalogo" className="hover:underline">Catálogo</Link>
@@ -42,13 +60,13 @@ export function Layout() {
         </div>
       </header>
 
-      <main className="flex-1"><Outlet /></main>
+      <main key={pathname} className="animate-fade-in flex-1"><Outlet /></main>
 
       <footer className="bg-black text-white">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:grid-cols-3 sm:px-6">
           <div>
-            <p className="text-lg font-extrabold">{STORE.name}</p>
-            <p className="mt-2 text-sm text-neutral-400">{STORE.address}</p>
+            <img src="/logo-blanco.png" alt={STORE.name} width={352} height={488} loading="lazy" className="h-20 w-auto" />
+            <p className="mt-5 text-sm text-neutral-400">{STORE.address}</p>
             <p className="text-sm text-neutral-400">{STORE.hours}</p>
           </div>
           <div>
@@ -68,7 +86,7 @@ export function Layout() {
           </div>
         </div>
         <p className="border-t border-white/15 px-4 py-5 text-center text-xs text-neutral-500">
-          © {new Date().getFullYear()} {STORE.name}.        </p>
+          © {new Date().getFullYear()} {STORE.name}.</p>
       </footer>
       <CartDrawer />
     </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { CLOUDINARY_CLOUD, SHEET_CSV_URL } from '../config'
+import { CLOUDINARY_CLOUD, IMAGE_PROXY, SHEET_CSV_URL } from '../config'
 import { DEMO_ROWS } from '../data/demo'
 
 export type Options = Record<string, string>
@@ -88,10 +88,17 @@ const yes = (s = '') => ['si', 'x', 'true', '1'].includes(normalize(s))
 const no = (s = '') => ['no', 'false', '0', 'agotado'].includes(normalize(s))
 const unique = <T,>(xs: T[]) => [...new Set(xs)]
 
-function optimize(url: string) {
-  return url.includes('res.cloudinary.com') && url.includes('/image/upload/')
-    ? url.replace('/image/upload/', '/image/upload/f_auto,q_auto,w_800/')
-    : url
+const CLOUDINARY = new RegExp('^https://res[.]cloudinary[.]com/([^/]+)/image/upload/(.+)$')
+const VERSION = new RegExp('^v[0-9]+$')
+
+// Foto de Cloudinary al ancho pedido. Con IMAGE_PROXY pasa por el Worker de Cloudflare.
+export function imageUrl(url: string, width: 160 | 400 | 800): string {
+  const match = url.match(CLOUDINARY)
+  if (!match) return url
+  const parts = match[2].split('/')
+  while (parts.length > 1 && /^[a-z]{1,3}_/.test(parts[0]) && !VERSION.test(parts[0])) parts.shift()
+  const path = `image/upload/f_webp,q_auto,w_${width}/${parts.join('/')}`
+  return IMAGE_PROXY ? `${IMAGE_PROXY}/${path}` : `https://res.cloudinary.com/${match[1]}/${path}`
 }
 
 // Una celda con "Negro, Blanco" genera una variante por cada valor.
@@ -139,7 +146,7 @@ function toProducts(rows: Record<string, string>[]): Product[] {
     }
 
     product.featured ||= yes(fixed.destacado)
-    const images = (fixed.foto ?? '').split(/[,\n]/).map((x) => x.trim()).filter((x) => x.startsWith('https://')).map(optimize)
+    const images = (fixed.foto ?? '').split(/[,\n]/).map((x) => x.trim()).filter((x) => x.startsWith('https://'))
     const price = parsePrice(fixed.precio ?? '') ?? basePrices.get(code) ?? null
     for (const options of expand(attrs)) {
       product.variants.push({ options, price, images, available: !no(fixed.disponible) })
@@ -150,7 +157,7 @@ function toProducts(rows: Record<string, string>[]): Product[] {
     const names = unique(p.variants.flatMap((v) => Object.keys(v.options)))
     let images = unique(p.variants.flatMap((v) => v.images))
     if (!images.length && CLOUDINARY_CLOUD) {
-      images = [`https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload/f_auto,q_auto,w_800/${p.code}`]
+      images = [`https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload/${p.code}`]
     }
     return {
       ...p,
