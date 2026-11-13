@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { CLOUDINARY_CLOUD, IMAGE_PROXY, SHEET_CSV_URL } from '../config'
+import { CATEGORY_ORDER, CLOUDINARY_CLOUD, IMAGE_PROXY, SHEET_CSV_URL } from '../config'
 import { DEMO_ROWS } from '../data/demo'
 
 export type Options = Record<string, string>
@@ -224,6 +224,12 @@ export function useCatalog(): CatalogState {
     }
   }, [])
   return state
+}
+
+// Categorías con productos, en el orden de CATEGORY_ORDER.
+export function categoriesOf(products: Product[]): string[] {
+  const rank = (c: string) => (CATEGORY_ORDER.includes(c) ? CATEGORY_ORDER.indexOf(c) : CATEGORY_ORDER.length)
+  return unique(products.map((p) => p.category)).sort((a, b) => rank(a) - rank(b))
 }
 
 export const money = (n: number) => `$${n.toLocaleString('en-US', { maximumFractionDigits: 2 })}`

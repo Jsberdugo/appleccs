@@ -1,15 +1,13 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { ProductGrid, ProductGridSkeleton } from '../components/ProductCard'
-import { CATEGORIES } from '../config'
-import { useCatalog } from '../lib/catalog'
+import { categoriesOf, useCatalog } from '../lib/catalog'
 
 export function CatalogPage() {
   const { products, status, isDemo } = useCatalog()
   const [params, setParams] = useSearchParams()
   const [search, setSearch] = useState('')
   const active = params.get('categoria') ?? ''
-  const extra = [...new Set(products.map((p) => p.category))].filter((c) => !CATEGORIES.includes(c))
   const term = search.trim().toLowerCase()
   const visible = products.filter((p) => (!active || p.category === active) && (!term || p.name.toLowerCase().includes(term)))
   const chip = (label: string, value: string) => (
@@ -39,7 +37,7 @@ export function CatalogPage() {
       />
       <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
         {chip('Todos', '')}
-        {[...CATEGORIES, ...extra].map((c) => chip(c, c))}
+        {categoriesOf(products).map((c) => chip(c, c))}
       </div>
       <div className="mt-8">
         {status === 'loading' && <ProductGridSkeleton />}

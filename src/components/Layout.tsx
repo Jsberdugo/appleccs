@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { Link, Outlet, useLocation } from 'react-router'
-import { CATEGORIES, STORE } from '../config'
+import { STORE } from '../config'
 import { setCartOpen, useCartItems, whatsappUrl } from '../lib/cart'
-import { useCatalog } from '../lib/catalog'
+import { categoriesOf, useCatalog } from '../lib/catalog'
 import { CartDrawer } from './CartDrawer'
 
 // Quita el loader de index.html cuando el catálogo responde (máximo 4 s).
@@ -30,7 +30,7 @@ function Logo() {
 
 export function Layout() {
   const { pathname, hash } = useLocation()
-  const { status } = useCatalog()
+  const { products, status } = useCatalog()
   useHideSplash(status !== 'loading')
   const count = useCartItems().reduce((n, x) => n + x.qty, 0)
 
@@ -72,7 +72,7 @@ export function Layout() {
           <div>
             <p className="text-sm font-bold">Productos</p>
             <ul className="mt-3 space-y-2 text-sm text-neutral-400">
-              {CATEGORIES.map((c) => (
+              {categoriesOf(products).map((c) => (
                 <li key={c}><Link className="hover:text-white" to={`/catalogo?categoria=${encodeURIComponent(c)}`}>{c}</Link></li>
               ))}
             </ul>

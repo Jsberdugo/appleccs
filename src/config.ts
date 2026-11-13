@@ -7,9 +7,12 @@ export const STORE = {
   address: 'Dirección por confirmar, Caracas, Venezuela',
   hours: 'Horario por confirmar',
   mapQuery: 'Caracas, Venezuela',
+  paymentNote: 'Precios en divisas: efectivo o USDT (Binance).',
 }
 
-export const CATEGORIES = ['iPhone', 'iPad', 'Mac', 'Apple Watch', 'AirPods', 'Accesorios']
+// Orden preferido. Solo se muestran las categorías que tienen productos en el Sheet;
+// las que no estén en esta lista aparecen al final.
+export const CATEGORY_ORDER = ['iPhone', 'iPad', 'Mac', 'Apple Watch', 'AirPods', 'Accesorios']
 
 // Se muestran solo si hay testimonios reales del cliente.
 export const TESTIMONIALS: { name: string; text: string }[] = []

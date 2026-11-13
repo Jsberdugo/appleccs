@@ -3,9 +3,9 @@ import type React from 'react'
 import { Link } from 'react-router'
 import { ProductGrid, ProductGridSkeleton } from '../components/ProductCard'
 import { useReveal } from '../hooks/useReveal'
-import { CATEGORIES, STORE, TESTIMONIALS } from '../config'
+import { STORE, TESTIMONIALS } from '../config'
 import { whatsappUrl } from '../lib/cart'
-import { useCatalog } from '../lib/catalog'
+import { categoriesOf, useCatalog } from '../lib/catalog'
 
 const STEPS = [
   ['Elige', 'Explora el catálogo y selecciona capacidad, color y condición.'],
@@ -30,6 +30,7 @@ const STORAGE_GUIDE = [
 
 const FAQ = [
   ['¿Cómo hago un pedido?', 'Agrega los productos al carrito y toca "Enviar pedido por WhatsApp". El mensaje se escribe solo con lo que elegiste.'],
+  ['¿Cómo se paga?', STORE.paymentNote + ' Los precios publicados son para pago en divisas.'],
   ['¿Pago en la página?', 'No. La página no procesa pagos ni te pide datos bancarios. El pago se coordina directamente con la tienda por WhatsApp.'],
   ['¿El producto está disponible?', 'Al recibir tu pedido confirmamos la disponibilidad y el precio antes de cerrar la compra.'],
   ['¿Puedo pedir varios productos a la vez?', 'Sí. El carrito reúne todo y lo envía en un solo mensaje.'],
@@ -55,6 +56,7 @@ export function HomePage() {
   const { products, status } = useCatalog()
   const featured = products.filter((p) => p.featured && p.available)
   const highlights = (featured.length ? featured : products).slice(0, 4)
+  const categories = categoriesOf(products)
   useReveal(status)
 
   return (
@@ -95,7 +97,7 @@ export function HomePage() {
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <h2 className="reveal text-3xl font-extrabold tracking-tight sm:text-4xl">Compra por categoría</h2>
         <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3">
-          {CATEGORIES.map((c, i) => (
+          {categories.map((c, i) => (
             <Link key={c} style={{ '--delay': `${i * 70}ms` } as React.CSSProperties} to={`/catalogo?categoria=${encodeURIComponent(c)}`} className="reveal group flex h-28 items-end justify-between rounded-2xl bg-neutral-100 p-5 font-bold hover:bg-black hover:text-white sm:h-40 sm:text-xl [transition-property:opacity,transform,background-color,color]">
               {c}<span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span>
             </Link>

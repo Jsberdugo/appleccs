@@ -71,6 +71,7 @@ function Detail({ product, related }: { product: Product; related: Product[] }) 
           <p className="text-sm text-neutral-500">{product.category}</p>
           <h1 className="mt-1 text-4xl font-extrabold tracking-tight sm:text-5xl">{product.name}</h1>
           <p key={variant.price ?? ''} className="animate-fade-in mt-3 text-2xl font-bold">{variant.price === null ? displayPrice(product) : money(variant.price)}</p>
+          <p className="mt-1 text-sm text-neutral-500">{STORE.paymentNote}</p>
           {product.description && <p className="mt-5 text-neutral-600">{product.description}</p>}
 
           {product.attributes.map((attr) => (
